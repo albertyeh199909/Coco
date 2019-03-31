@@ -1,7 +1,7 @@
 // Assignment 1 19T1 COMP1511 Coco
 //
-// This program was written by YOUR-NAME-HERE (z5555555)
-// on INSERT-DATE-HERE
+// This program was written by YOUR-NAME-HERE (z5236552)
+// on 25/03/2019
 //
 
 #include <stdio.h>
@@ -30,7 +30,7 @@ void choose_card_to_play(void);
 
 
 // ADD PROTOTYPES FOR YOUR FUNCTIONS HERE
-
+void choosing_first_card(int tablePosition, int amountInHand, int currentHand[amountInHand]);
 
 // You should not need to change this main function
 
@@ -63,17 +63,18 @@ void choose_discards() {
     // THEN ADD YOUR CODE HERE TO CHOOSE AND PRINT THE CARDS YOU WISH TO DISCARD
     int initialHand[N_CARDS_INITIAL_HAND];
     int i = 0;
-    while(i < N_CARDS_INITIAL_HAND) {
+    while (i < N_CARDS_INITIAL_HAND) {
         scanf("%d",&initialHand[i]);
         i++;
     }
     
+    /*
     int x = 0;
     
-    while(x < N_CARDS_INITIAL_HAND) {    //sorts array to make discard convenient
+    while (x < N_CARDS_INITIAL_HAND) {    
         int y = 0;
-        while(y < N_CARDS_INITIAL_HAND) {
-            if(array[x] < array[y]) {
+        while (y < N_CARDS_INITIAL_HAND) {
+            if (array[x] > array[y]) {
                 int temp = array[x];
                 array[x] = array[y];
                 array[y] = temp;
@@ -83,24 +84,45 @@ void choose_discards() {
         }
         i++;
     }
-    
+    */
     int discardCount = 0;
     int counter = 0;
-    while(counter < N_CARDS_INITIAL_HAND) {
-        if(initialHand[counter] == 42) {
+    //discards card 42
+    while (counter < N_CARDS_INITIAL_HAND) {     
+        if (initialHand[counter] == 42) {
             printf("42 ");
             discardCount++;
         }
-        counter++
-    }        
+        counter++;
+    }
+    // array is sorted ascending order, so start checking from highest number
+    int counter1 = N_CARDS_INITIAL_HAND - 1 ;
+    while (counter1 >= 0) {                      
+        if (discardCount < 3) {
+            if (initialHand[counter1] == 47 || initialHand[counter1] == 43 || initialHand[counter1] == 41 || initialHand[counter1] == 37 || 
+            initialHand[counter1] == 31) {
+                printf("%d ", initialHand[counter1]);
+                discardCount++;
+            }
+        }
+        counter1--;
+    }
+    int counter2 = N_CARDS_INITIAL_HAND - 1 ;
+    while (counter2 >= 0) {
+        if (discardCount < 3) {
+            if (initialHand[counter2] != 47 && initialHand[counter2] != 43 && initialHand[counter2] != 41 && initialHand[counter2] != 37 && 
+            initialHand[counter2] != 31) { 
+                printf("%d ", initialHand[counter2]);
+                discardCount++;
+            }   
+        }
+        counter2--;
+    }   
        
     
     // NOTE: THE PROVIDED CODE PROBABLY DISCARDS CARDS NOT IN YOUR HAND
     // WHICH IS NOT LEGAL AND WILL RECEIVE PENALTY POINTS
     // YOU MUST CHANGE IT TO DISCARD CARDS FROM YOUR HAND.
-
-    printf("43 44 45\n");
-
 }
 
 
@@ -108,21 +130,74 @@ void choose_card_to_play(void) {
 
     // ADD CODE TO READ THE FIRST THREE NUMBERS WHICH ARE:
     // NUMBER OF CARDS IN YOUR HAND,  NUMBER OF CARDS PLAYED THIS ROUND, TABLE POSITION
-
+    int amountInHand = 0;
+    int amountPlayed = 0;
+    int tablePosition = 0;
+    scanf("%d", &amountInHand);
+    scanf("%d",&amountPlayed);
+    scanf("%d",&tablePosition);
     // ADD CODE TO READ THE CARDS OF YOUR HAND INTO AN ARRAY
     // YOU WILL NEED TO USE A WHILE LOOP AND SCANF
-
+    int currentHand[amountInHand];
+    int i = 0;
+    while (i < amountInHand) {
+        scanf("%d", &currentHand[i]);
+        i++;
+    }
     // ADD CODE TO READ THE CARDS PREVIOUSLY PLAYED THIS ROUND INTO AN ARRAY
     // YOU WILL NEED TO USE A WHILE LOOP AND SCANF
-
+    // I am stupid
+    if (amountPlayed != 0) {
+        int cardsPlayed[amountPlayed];
+        int counter = 0;
+        while (counter < amountPlayed) {
+            scanf("%d", &cardsPlayed[counter]);
+            counter++;
+        }
+    }
     // ADD CODE TO READ THE CARDS PLAYED IN THE HISTORY OF THE GAME INTO AN ARRAY
     // YOU WILL NEED TO USE A WHILE LOOP AND SCANF
-
+    int arraySize = (N_CARDS_INITIAL_HAND - amountInHand)*4;
+    if(arraySize != 0) {
+        int cardHistory[arraySize];
+        int counter1 = 0;
+        while (counter1 < arraySize) {
+            scanf("%d", &cardHistory[counter1]);
+            counter1++;
+        }
+    }
+    // Code for scanning discarded cards
+    int discards[3];
+    int counter2 = 0;
+    while (counter2 < 3) {
+        scanf("%d", &discards[counter2]);
+        counter2++;
+    }
+    // Code for scanning cards received from previous player
+    int receivedCards[3];
+    int counter3 = 0;
+    while (counter3 < 3) {
+        scanf("%d", &receivedCards[counter3]);
+        counter3++;
+    }
     // THEN REPLACE THIS PRINTF WITH CODE TO CHOOSE AND PRINT THE CARD YOU WISH TO PLAY
-
-    printf("42\n");
+    choosing_first_card(tablePosition, amountInHand, currentHand[amountInHand]);
+    
 
 }
 
 // ADD YOUR FUNCTIONS HERE
- 
+void choosing_first_card(int tablePosition, int amountInHand, int currentHand[amountInHand]) {
+    if (tablePosition == 0 && amountInHand == 10) {
+        int i = 0;
+        while (i < amountInHand) {
+            if (currentHand[i] == 11 || currentHand[i] == 13 || currentHand[i] == 17 || currentHand[i] == 19
+            || currentHand[i] == 23 || currentHand[i] == 29) {
+                printf("%d", currentHand[i]);
+            }
+            i++;
+        }
+    }
+
+}    
+       
