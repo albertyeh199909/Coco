@@ -31,6 +31,7 @@ void choose_card_to_play(void);
 
 // ADD PROTOTYPES FOR YOUR FUNCTIONS HERE
 void choosing_first_card(int tablePosition, int amountInHand, int currentHand[amountInHand]);
+void cocomposite(int amountInHand, int cardsPlayed[], int currentHand[]);
 
 // You should not need to change this main function
 
@@ -181,13 +182,13 @@ void choose_card_to_play(void) {
         counter3++;
     }
     // THEN REPLACE THIS PRINTF WITH CODE TO CHOOSE AND PRINT THE CARD YOU WISH TO PLAY
-    choosing_first_card(tablePosition, amountInHand, currentHand[amountInHand]);
+    choosing_first_card(tablePosition, amountInHand, currentHand);
     
 
 }
 
 // ADD YOUR FUNCTIONS HERE
-void choosing_first_card(int tablePosition, int amountInHand, int currentHand[amountInHand]) {
+void choosing_first_card(int tablePosition, int amountInHand, int currentHand[]) {
     if (tablePosition == 0 && amountInHand == 10) {
         int i = 0;
         while (i < amountInHand) {
@@ -199,5 +200,62 @@ void choosing_first_card(int tablePosition, int amountInHand, int currentHand[am
         }
     }
 
-}    
-       
+}
+
+void cocomposite(int amountInHand, int cardsPlayed[], int currentHand[]) { 
+    int first_card = cardsPlayed[0];
+    int counter1 = 0;
+    int arrayLength = 0;
+    //figure out array length of cocomposite array to be able to declare it
+    while (counter1 < amountInHand) {
+        int counter2 = 2;
+        while (counter2 <= 9) {
+            if( currentHand[counter1] % counter2 == 0 && first_card % counter2 == 0) {
+                arrayLength++;
+                break;
+            }
+            counter2++;
+        }
+        counter1++;
+    }
+    int cocomposite[arrayLength];
+    int counter3 = 0;
+    int arrayPosition = 0;
+    while (counter3 < amountInHand) {
+        int counter4 = 2;
+        while (counter4 <= 9) {
+            if( currentHand[counter3] % counter4 == 0 && first_card % counter4 == 0) {
+                cocomposite[arrayPosition] = currentHad[counter3];
+                arrayPosition++;
+                break;
+            }
+            counter4++;
+        }
+        counter3++;
+    }
+      
+         
+}
+/*void sort_array(int arrayLength, int cocomposite[]) {
+    int i = 0;
+    while(i < 6) {
+        int y = 0;
+        while(y < 6) {
+            if(array[i] > array[y]) {
+                int temp = array[i];
+                array[i] = array[y];
+                array[y] = temp;
+                
+            }
+            y++;
+        }
+        i++;
+    }
+    
+    int z = 0;
+    while(z < 6) {
+        printf("%d ", array[z]);
+        z++;
+    }
+} 
+*/    
