@@ -276,9 +276,9 @@ void cocomposite(int amountInHand, int amountPlayed, int totalPlayed, int cardsP
     }
     //sort cardsPlayed array to check largest number played so far
     int sortCounter1 = 0;
-    while (i < amountPlayed) {
+    while (sortCounter < amountPlayed) {
         int sortCounter2 = 0;
-        while (y < amountPlayed) {
+        while (sortCounter2 < amountPlayed) {
             if (cardsPlayed[sortCounter1] > cardsPlayed[sortCounter2]) {
                 int temp = cardsPlayed[sortCounter1];
                 cardsPlayed[sortCounter1] = cardsPlayed[sortCounter2];
@@ -288,24 +288,54 @@ void cocomposite(int amountInHand, int amountPlayed, int totalPlayed, int cardsP
         }
         sortCounter1++;
     }
-    int selectCounter = 0;
     int douglas = 0;
     //checks if the number 42 has been played in previous rounds
-    while (selectCounter < totalPlayed) {
-        if (cardHistory[selectCounter] == 42) {
-            douglas = 1;
-            break;      
-        }
-        selectCounter++;
-    }
+    douglas = check_douglas(totalPlayed, cardHistory);
     //if douglas has been played, risk of playing large number lowered
     if (douglas == 1) {
         printf("%d ", cocomposite[arrayLength - 1]);
     }
     else {
-    //checks if prime number has been played, play number lower than current largest number
-    
+    //check if douglas has been played in this round
+        douglas = check_douglas(amountPlayed, cardsPlayed);
+        if (douglas == 1) {
+            int printCounter = arrayLength - 1;
+            while(printCounter >= 0) {
+                if(cocomposite[printCounter] < 42) {
+                    printf("%d ", cocomposite[printCounter]);
+                    break;
+                }
+                printCounter--;
+            }
+         }
+         else {
             
+}
+int check_prime(int arrayLength, int array[]) {
+    int i = 0;
+    int prime = 0;
+    while (i < arrayLength) {
+        if (array[i] == 11 || array[i] == 13 || array[i] == 17 || array[i] == 19 ||
+        array[i] == 23 || array[i] == 29 || array[i] == 31 || array[i] == 37 ||
+        array[i] == 41 || array[i] == 43 || array[i] == 47) {
+            prime = 1;
+        }
+        i++
+    }
+    return prime;
+}
+int check_douglas(int arrayLength, int array[]) {
+    int selectCounter = 0;
+    int douglas = 0;
+    //checks if the number 42 has been played in previous rounds
+    while (selectCounter < arrayLength) {
+        if (array[selectCounter] == 42) {
+            douglas = 1;
+            break;      
+        }
+        selectCounter++;
+    }        
+    return douglas;
 }
 /*void sort_array(int arrayLength, int cocomposite[]) {
     int i = 0;
