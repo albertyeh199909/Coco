@@ -23,6 +23,7 @@
 #define DUMMY_AVOID_ZERO     20
 #define DISCARD_AMOUNT       3
 #define FACTORS              9
+#define DOUGLAS              42
 
 // IF YOU NEED MORE #defines ADD THEM HERE
 
@@ -33,8 +34,8 @@ void choose_card_to_play(void);
 
 
 // ADD PROTOTYPES FOR YOUR FUNCTIONS HERE
-void choosing_first_card(int tablePosition, int amountInHand, 
-                         int currentHand[amountInHand]);
+void choosing_first_card(int amountPlayed, int amountInHand, 
+                         int currentHand[amountInHand], int cardHistory[]);
 void cocompositeSelection(int amountInHand, int amountPlayed, int totalPlayed,
                           int cardsPlayed[], int currentHand[], 
                           int cardHistory[], int discards[]);
@@ -43,10 +44,16 @@ int check_douglas(int arrayLength, int array[]);
 void sort_array(int arrayLength, int *arr );
 void printCocomposite (int arrayLength, int cardsPlayed[], int cocomposite[]);
 void no_cocomposite(int amountInHand, int currentHand[]);
-void cocomposite_array(int arrayLength, int amountInHand, 
+void cocomposite_array(int first_card, int amountInHand, 
                        int cocomposite[], int currentHand[]);
-int composite_array_length(int amountInHand, int first_card, int currentHand[]);
-int discardCondition1(int card);
+int cocomposite_array_length(int amountInHand, int first_card, int currentHand[]);
+int discard_large_prime(int card);
+void print_non_prime (int amountInHand, int currentHand[]);
+int prime_first_card(int card);
+void prime_array(int amountInHand, int currentHand[], int prime[]);
+int prime_array_length(int amountInHand, int currentHand[]);
+void primeSelection (int amountInHand, int amountPlayed, int totalPlayed, 
+                    int cardsPlayed[], int currentHand[], int cardHistory[]);
 // You should not need to change this main function
 
 int main(void) {
@@ -85,8 +92,8 @@ void choose_discards() {
     int counter = 0;
     //discards card 42
     while (counter < N_CARDS_INITIAL_HAND) {     
-        if (initialHand[counter] == 42) {
-            printf("42 ");
+        if (initialHand[counter] == DOUGLAS) {
+            printf("%d ",DOUGLAS);
             discardCount++;
         }
         counter++;
@@ -94,8 +101,8 @@ void choose_discards() {
     // array is sorted ascending order, so start checking from highest number
     int counter1 = N_CARDS_INITIAL_HAND - 1 ;
     while (counter1 >= 0) {                      
-        if (discardCount < 3) {   //pass one number
-            if (discardCondition1(initialHand[counter1] == 1) {
+        if (discardCount < 3) {   
+            if (discard_large_prime(initialHand[counter1]) == 1) {
                 printf("%d ", initialHand[counter1]);
                 discardCount++;
             }
@@ -104,9 +111,9 @@ void choose_discards() {
     }
     int counter2 = N_CARDS_INITIAL_HAND - 1 ;
     while (counter2 >= 0) {
-        if (discardCount < 3) {
+        if (discardCount < 3) { //!discardCondition1()==1
             if (initialHand[counter2] != 47 && initialHand[counter2] != 43 && 
-            initialHand[counter2] != 41 && initialHand[counter2] != 37 && 
+            initialHand[counter2] != 41 && initialHand[counter2] != 37 &&       
             initialHand[counter2] != 31) { 
                 printf("%d ", initialHand[counter2]);
                 discardCount++;
@@ -140,7 +147,6 @@ void choose_card_to_play(void) {
     }
     // ADD CODE TO READ THE CARDS PREVIOUSLY PLAYED THIS ROUND INTO AN ARRAY
     // YOU WILL NEED TO USE A WHILE LOOP AND SCANF
-    // I am stupid
     if (amountPlayed == 0) {
         amountPlayed = DUMMY_AVOID_ZERO;
     }
@@ -158,8 +164,8 @@ void choose_card_to_play(void) {
     if (totalPlayed == 0) {
         totalPlayed = DUMMY_AVOID_ZERO;
     }
+    int cardHistory[totalPlayed];
     if (totalPlayed != DUMMY_AVOID_ZERO) {
-        int cardHistory[totalPlayed];
         int counter1 = 0;
         while (counter1 < totalPlayed) {
             scanf("%d", &cardHistory[counter1]);
@@ -181,76 +187,68 @@ void choose_card_to_play(void) {
         counter3++;
     }
     // THEN REPLACE THIS PRINTF WITH CODE TO CHOOSE AND PRINT THE CARD YOU WISH TO PLAY
-    cocompositeSelection(amountInHand, amountPlayed, totalPlayed, cardsPlayed[], 
-                         currentHand, cardHistory, discards); 
     
+    if (amountPlayed == DUMMY_AVOID_ZERO) {
+        choosing_first_card(amountPlayed, amountInHand, currentHand, cardHistory);
+    } 
+    else if (amountPlayed != DUMMY_AVOID_ZERO && prime_first_card(cardsPlayed[0]) == 1) {
+        primeSelection(amountInHand, amountPlayed, totalPlayed, 
+                       cardsPlayed, currentHand, cardHistory);
+    }
+    else {
+        cocompositeSelection(amountInHand, amountPlayed, totalPlayed, cardsPlayed, 
+                                              currentHand, cardHistory, discards); 
+    }
 
 }
 
 // ADD YOUR FUNCTIONS HERE
-void choosing_first_card(int tablePosition, int amountInHand, int currentHand[]) {
+void choosing_first_card(int amountPlayed, int amountInHand, int currentHand[], int cardHistory[]) {
     int i = amountInHand - 1;
-    int havePrimeNumber = 0;
-    int counter = amountInHand - 1;
-    if (tablePosition == 0 && amountInHand >= 6) {
-        //checks for prime number
-        while (i >= 0) {
-            if (currentHand[i] == 29 || currentHand[i] == 31 || 
-            currentHand[i] == 37 || currentHand[i] == 41) {
-                printf("%d", currentHand[i]);
-                havePrimeNumber = 1;
-                break;
-            }
-            i--;
-        }
-        //prints card if no prime number
-        if (havePrimeNumber == 0) {
-            while (counter >= 0) {
-                if ((currentHand[counter] % 2 == 0 && currentHand[counter] < 42) || currentHand[counter] % 3 == 0 || 
-                currentHand[counter] % 5 == 0 || currentHand[counter] % 7 == 0) {
-                   printf("%d", currentHand[counter]);
-                   break;
-                }
-                counter--;
-            }
-        }    
+    int counter1 = amountInHand - 1;
+    int first_card = (N_CARDS_INITIAL_HAND - amountInHand)*4 - 1;
+    if (amountInHand ==10) {
+        print_non_prime(amountInHand,currentHand);
     } 
-    else if (tablePosition == 0 && amountInHand <= 5) {
-        int counter1 = amountInHand - 1;
-        int counter2 = amountInHand - 1;
-        //checks for prime number
-        while (counter1 >= 0) {
-            if (currentHand[counter1] == 11 || currentHand[counter1] == 13 || currentHand[counter1] == 17 || currentHand[counter1] == 19) {
-                printf("%d", currentHand[counter1]);
-                havePrimeNumber = 1;
-                break;
-            }
-            counter1--;
-        }
-        //prints card if no prime number
-        if (havePrimeNumber == 0) {
-            while (counter2 >= 0) {
-                if ((currentHand[counter2] % 2 == 0 && currentHand[counter2] < 42) || currentHand[counter2] % 3 == 0 || 
-                currentHand[counter2] % 5 == 0 || currentHand[counter2] % 7 == 0) {
-                   printf("%d", currentHand[counter2]);
-                   break;
+    else if (amountInHand >= 6) {    //change this function, prime restriction       
+        if (prime_first_card(cardHistory[first_card]) == 1) {  //checks first card previous round
+            while (i >= 0) {
+                if (currentHand[i] == 29 || currentHand[i] == 31 || 
+                    currentHand[i] == 37 || currentHand[i] == 41) {
+                    printf("%d\n", currentHand[i]);
+                    break;
                 }
-                counter2--;
-            }
-        }  
+                i--;
+            }   
+        }
+        else {  
+            print_non_prime(amountInHand,currentHand); 
+        } 
+    } 
+    
+    else if (amountInHand <= 5) {
+        if (prime_first_card(cardHistory[first_card]) == 1) {  //checks first card previous round
+            while (counter1 >= 0) {
+                if (currentHand[counter1] == 11 || currentHand[counter1] == 13 || 
+                    currentHand[counter1] == 17 || currentHand[counter1] == 19) {
+                    printf("%d\n", currentHand[i]);
+                    break;
+                }
+                counter1--;
+            }   
+        }
+        else {  
+            print_non_prime(amountInHand,currentHand); 
+        }       
     }     
 }
 
-
-
-
-
-
 void cocompositeSelection(int amountInHand, int amountPlayed, int totalPlayed, 
-int cardsPlayed[], int currentHand[], int cardHistory[], int discards[]) { 
+                          int cardsPlayed[], int currentHand[], int cardHistory[],
+                          int discards[]) { 
     int first_card = cardsPlayed[0];
     //figure out array length of cocomposite array to be able to declare it
-    int arrayLength = cocomposite_array_length(amountInHand, firstCard, currentHand);
+    int arrayLength = cocomposite_array_length(amountInHand, first_card, currentHand);
     //if arrayLength is 0 set as dummy value
     if (arrayLength == 0) {
         arrayLength = DUMMY_AVOID_ZERO;
@@ -258,33 +256,38 @@ int cardsPlayed[], int currentHand[], int cardHistory[], int discards[]) {
     //list of cocomposites as an array
     int cocomposite[arrayLength];
     if(arrayLength != DUMMY_AVOID_ZERO) {
-        cocomposite_array(arrayLength, amountInHand, first_card, cocomposite, currentHand);
+        cocomposite_array(first_card, amountInHand, cocomposite, currentHand);
     }
     //sort cardsPlayed array to check largest number played so far
     int *p = cardsPlayed;
     sort_array(amountPlayed, p);
     //checks if the number 42 has been played in previous rounds    
     int douglas = 0;
-    douglas = check_douglas(totalPlayed, cardHistory);
+    if (totalPlayed != DUMMY_AVOID_ZERO) {
+        douglas = check_douglas(totalPlayed, cardHistory);
+    }
+    else {
+        douglas = 0;
+    }
     //if douglas has been played, risk of playing large number lowered
     if(arrayLength != DUMMY_AVOID_ZERO) {
         if (douglas == 1) {
-            printf("%d ", cocomposite[arrayLength - 1]);
+            printf("%d\n", cocomposite[arrayLength - 1]);
         }
         else {
-            //check if douglas has been played in this round
             douglas = check_douglas(amountPlayed, cardsPlayed);
             if (douglas == 1) {
-                printCocomposite(arrayLength, cardsPlayed, cocomposite);
-             }
+                printf("%d\n", cocomposite[arrayLength - 1]);
+                //printCocomposite(arrayLength, cardsPlayed, cocomposite);
+            }
             else {
-                //checks if next person has douglass
+                //checks if next person has douglas
                 douglas = check_douglas(DISCARD_AMOUNT, discards);
                 if (douglas == 1) {
                     printCocomposite(arrayLength, cardsPlayed, cocomposite);    
                 }
                 else {
-                    printf("%d ", cocomposite[arrayLength - 1]);
+                    printf("%d\n", cocomposite[arrayLength - 1]);
                 }
             }           
         }
@@ -293,9 +296,98 @@ int cardsPlayed[], int currentHand[], int cardHistory[], int discards[]) {
         no_cocomposite(amountInHand, currentHand);
     }
     else {          
-        printf("%d ", currentHand[amountInHand-1]);                            
+        printf("%d\n", currentHand[amountInHand-1]);                            
     }
 }
+//play small number near the end of the round
+void primeSelection (int amountInHand, int amountPlayed, int totalPlayed, 
+                    int cardsPlayed[], int currentHand[], int cardHistory[]) {
+    int arrayLength = prime_array_length(amountInHand, currentHand);
+    if (arrayLength == 0) {
+        arrayLength = DUMMY_AVOID_ZERO;
+    }
+    int prime[arrayLength];
+    if (arrayLength != DUMMY_AVOID_ZERO) {
+        prime_array(amountInHand, currentHand, prime);
+    }
+    int *p = cardsPlayed;
+    sort_array(amountPlayed, p);
+    int primePlayed = 0;
+    if (arrayLength != DUMMY_AVOID_ZERO) {
+        if (amountPlayed == 1 || amountPlayed == 2) {
+            int i = arrayLength - 1;
+            while (i >= 0) {
+                if (prime[i] < cardsPlayed[0]) {
+                    printf("%d\n", prime[i]);
+                    primePlayed = 1;
+                    break;
+                }
+                i--;
+            }
+            if (primePlayed == 0) {
+                printf("%d\n",prime[0]);
+            }
+        }
+        else if (amountPlayed == 3) {
+            int j = arrayLength - 1;
+            while (j >= 0) {
+                if (prime[j] < cardsPlayed[0]) {
+                    printf("%d\n", prime[j]);
+                    primePlayed = 1;
+                    break;
+                }
+                j--;
+            }   
+            if (primePlayed == 0) {
+                printf("%d\n",prime[arrayLength - 1]);
+            }
+        }
+    }
+    else {
+        printf("%d\n", currentHand[amountInHand-1]);
+    }       
+}      
+                        
+
+
+//checks if prime number was the first card last round
+int prime_first_card(int card) {
+    int prime = 0;
+    if (card == 11 || card == 13 || card == 17 || card == 19 
+     || card == 23 || card == 29 || card == 31 || card == 37 
+     || card == 41 || card == 43 || card == 47) {
+        prime = 1;
+    }
+    return prime;
+}
+
+//check how many prime numbers in current hand
+int prime_array_length(int amountInHand, int currentHand[]) {
+    int counter1 = 0;
+    int arrayLength = 0;
+    while (counter1 < amountInHand) {
+        int card = currentHand[counter1];
+        if (prime_first_card(card) == 1) {
+            arrayLength++;
+        }
+        counter1++;
+    }
+            
+    return arrayLength;
+}
+//array for playing prime numbers
+void prime_array(int amountInHand, int currentHand[], int prime[]) {
+    int counter = 0;
+    int arrayPosition = 0;
+    while (counter < amountInHand) {
+        int card = currentHand[counter];
+        if (prime_first_card(card) == 1) {
+            prime[arrayPosition] = card  ;
+            arrayPosition++;
+        }
+        counter++;
+    }
+}              
 
 //check if a prime number is in an array
 int check_prime(int arrayLength, int array[]) {
@@ -303,8 +395,8 @@ int check_prime(int arrayLength, int array[]) {
     int prime = 0;
     while (i < arrayLength) {
         if (array[i] == 11 || array[i] == 13 || array[i] == 17 || array[i] == 19 
-        || array[i] == 23 || array[i] == 29 || array[i] == 31 || array[i] == 37 
-        || array[i] == 41 || array[i] == 43 || array[i] == 47) {
+         || array[i] == 23 || array[i] == 29 || array[i] == 31 || array[i] == 37 
+         || array[i] == 41 || array[i] == 43 || array[i] == 47) {
             prime = 1;
         }
         i++;
@@ -316,7 +408,7 @@ int check_douglas(int arrayLength, int array[]) {
     int selectCounter = 0;
     int douglas = 0;
     while (selectCounter < arrayLength) {
-        if (array[selectCounter] == 42) {
+        if (array[selectCounter] == DOUGLAS) {
             douglas = 1;
             break;      
         }
@@ -360,8 +452,8 @@ void printCocomposite (int arrayLength, int cardsPlayed[], int cocomposite[]) {
 void no_cocomposite(int amountInHand, int currentHand[]) {
 int printCounter = amountInHand - 1;
     while (printCounter >= 0) {
-        if (currentHand[printCounter] == 47 || currentHand[printCounter] == 43 
-        || currentHand[printCounter] == 41 || currentHand[printCounter] == 37) {
+        if (currentHand[printCounter] == 47 || currentHand[printCounter] == 43 ||
+            currentHand[printCounter] == 41 || currentHand[printCounter] == 37) {
             printf("%d ", currentHand[printCounter]);
             break;
             }
@@ -373,32 +465,32 @@ int printCounter = amountInHand - 1;
 }
 
 //creates an array of cocomposites
-void cocomposite_array(int arrayLength, int amountInHand, int cocomposite[], 
+void cocomposite_array(int first_card, int amountInHand, int cocomposite[], 
                        int currentHand[]) { 
     int counter3 = 0;
     int arrayPosition = 0;
     while (counter3 < amountInHand) {
         int counter4 = 2;
         while (counter4 <= FACTORS) {
-            if( currentHand[counter3] % counter4 == 0 && first_card % counter4 == 0) {
-            cocomposite[arrayPosition] = currentHand[counter3];
-            arrayPosition++;
-            break;
+            if(currentHand[counter3] % counter4 == 0 && first_card % counter4 == 0) {
+                cocomposite[arrayPosition] = currentHand[counter3];
+                arrayPosition++;
+                break;
             }
             counter4++;
         }
-            counter3++;
+        counter3++;
     }
 }
-
+//11, 12, 13, 19, 36, 39, 41, 43, 47, 48
 //calculate array length of cocomposite array to be able to declare it
-int composite_array_length(int amountInHand, int first_card, int currentHand[]) {
+int cocomposite_array_length(int amountInHand, int first_card, int currentHand[]) {
     int counter1 = 0;
     int arrayLength = 0;
     while (counter1 < amountInHand) {
         int counter2 = 2;
         while (counter2 <= FACTORS) {
-            if( currentHand[counter1] % counter2 == 0 && first_card % counter2 == 0) {
+            if (currentHand[counter1] % counter2 == 0 && first_card % counter2 == 0) {
                 arrayLength++;
                 break;
             }
@@ -408,9 +500,27 @@ int composite_array_length(int amountInHand, int first_card, int currentHand[]) 
     }
     return arrayLength;
 }
-int discardCondition1(int card) {
+int discard_large_prime(int card) {
     int discard = 0;
     if(card == 47 || card == 43 || card == 41 || card == 37 || card == 31) {
         discard = 1;
     }
-    return discard;      
+    return discard;
+}
+//if possible, prints a number that will not be penalized if another player plays 42
+void print_non_prime (int amountInHand, int currentHand[]) {  
+    int counter = amountInHand - 1;
+    while (counter >= 0) {
+        int card = currentHand[counter];
+        if (card < DOUGLAS) {
+            if(card % 2 == 0 || card % 3 == 0 || card % 5 == 0 || card % 7 == 0){
+                printf("%d\n", card);
+                break;
+            }
+        }
+        else if (counter == 0) {
+            printf("%d ", currentHand[amountInHand-1]);   
+        }       
+        counter--;
+    }
+}     
