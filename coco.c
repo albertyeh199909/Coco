@@ -309,13 +309,13 @@ void cocompositeSelection(int amountInHand, int amountPlayed, int totalPlayed,
         }
         else {
             douglas = check_douglas(amountPlayed, cardsPlayed);
-            if (douglas == 1) {
+            if (douglas == 1 || check_prime(amountPlayed, cardsPlayed) == 1) {
                 printCocomposite(arrayLength, cardsPlayed, cocomposite);
             }
             else {
                 //checks if next person has douglas
                 douglas = check_douglas(DISCARD_AMOUNT, discards);
-                if (douglas == 1) {
+                if (douglas == 1 || amountInHand < 5) {
                     printCocomposite(arrayLength, cardsPlayed, cocomposite);    
                 }
                 else {
