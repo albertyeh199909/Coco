@@ -268,7 +268,7 @@ void choosing_first_card(int totalPlayed, int amountInHand, int currentHand[], i
             }       
         }
         else if (only_prime(amountInHand, currentHand) == 1) {  
-            printf("%d ", currentHand[0]);     
+            printf("%d\n", currentHand[0]);     
         }
         else {
             print_non_prime(amountInHand,currentHand);
@@ -485,12 +485,12 @@ void printCocomposite (int arrayLength, int cardsPlayed[], int cocomposite[]) {
     int printCounter = arrayLength - 1;       
     while (printCounter >= 0) {
         if (cocomposite[printCounter] < cardsPlayed[0]) {
-            printf("%d ", cocomposite[printCounter]);
+            printf("%d\n", cocomposite[printCounter]);
             break;
         }
         //no suitable card condition
         else if (printCounter == 0) {
-            printf("%d ", cocomposite[arrayLength - 1]);
+            printf("%d\n", cocomposite[arrayLength - 1]);
         }       
         printCounter--;
     }
@@ -502,11 +502,11 @@ int printCounter = amountInHand - 1;
     while (printCounter >= 0) {
         if (currentHand[printCounter] == 47 || currentHand[printCounter] == 43 ||
             currentHand[printCounter] == 41 || currentHand[printCounter] == 37) {
-            printf("%d ", currentHand[printCounter]);
+            printf("%d\n", currentHand[printCounter]);
             break;
             }
         else if (printCounter == 0) {
-            printf("%d ", currentHand[amountInHand-1]);   
+            printf("%d\n", currentHand[amountInHand-1]);   
         }
         printCounter--;
     }
@@ -539,7 +539,8 @@ int cocomposite_array_length(int amountInHand, int first_card, int currentHand[]
     while (counter1 < amountInHand) {
         int counter2 = 2;
         while (counter2 <= FACTORS) {
-            if (currentHand[counter1] % counter2 == 0 && first_card % counter2 == 0) {
+            if (currentHand[counter1] % counter2 == 0 && first_card % counter2 == 0 
+             && currentHand[counter1] != counter2 && first_card != counter2) {
                 arrayLength++;
                 break;
             }
@@ -569,7 +570,7 @@ void print_non_prime (int amountInHand, int currentHand[]) {
             }
         }
         else if (counter == 0) {
-            printf("%d ", currentHand[amountInHand - 1]);   
+            printf("%d\n", currentHand[amountInHand - 1]);   
         }       
         counter--;
     }
